@@ -11,11 +11,11 @@ LOGGER.setLevel(logging.DEBUG)
 
 FORMAT = '%(asctime)s - %(levelname)s - %(message)s\n%(extra)s\n'
 logging.basicConfig(format=FORMAT, datefmt='%m/%d/%Y %H:%M:%S')
-# logging.disable(logging.DEBUG)
+logging.disable(logging.DEBUG)
 
 # LOGGER.debug('Hello Graylog.')
 
-tasty = TastyTrades.TastyTrades(username="nckspec", password="1Success2015!", account_id="5WX92378")
+tasty = TastyTrades.TastyTrades(username="nckspec", password="1Success2015!", account_id="5WX92378", debug=True)
 
 print(tasty.get_balance())
 
@@ -25,10 +25,43 @@ print(tasty.get_balance())
 
 date = datetime.date(2023, 7, 17)
 
-ooc, response = tasty.get_option_contract("NDXP", "Put", 10700, date)
 
-print(ooc)
+
+order = tasty.create_order(
+    type="put",
+    symbol="NDXP",
+    expiration_date=date,
+    limit=5.0,
+    price_effect="credit",
+    quantity=1,
+    buy_strike_price=15700,
+    sell_strike_price=15710
+)
+
+def get_trades():
+    endpoint = f"/accounts/{tasty.get_account_id()}/orders/live"
+    response = tasty._make_request(endpoint, "get")
+    print(response.json())
+
+def cancel_trade(id):
+    endpoint = f"/accounts/{tasty.get_account_id()}/orders/{id}"
+
+    response = tasty._make_request(endpoint, "delete")
+
+    print(response.json())
+
+get_trades()
+
+
+response = order.send()
 print(response.json())
+
+response = order.cancel()
+print(response.json())
+
+# print(order)
+# print()
+
 
 
 
