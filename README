@@ -1,0 +1,13 @@
+Environment Variables:
+
+LOGGER_HOST = {IP address of graylog logger}
+LOGGER_PORT = {port of graylog logger}
+
+TASTY_TRADES_USERNAME = {username of Tasty Trades account}
+TASTY_TRADES_PASSWORD = {password of Tasty Trades account}
+TASTY_TRADES_ACCOUNT_ID = {account id of Tasty Trades account}
+TASTY_TRADES_DEBUG = {True/False - If True Tasty Trades will use sandbox mode}
+
+TRADE_NOTIFICATIONS_CHANNEL = {Discord channel we are getting notifications on}
+TRADE_NOTIFICATIONS_BOT = {The Discord username (and number) of the bot sending notification}
+DISCORD_TOKEN = {Discord bot token}

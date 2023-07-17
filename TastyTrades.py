@@ -1,7 +1,7 @@
 import logging
 import requests
 import datetime
-import pytz
+
 LOGGER = logging.getLogger('logger')
 
 API_URL = "https://api.tastyworks.com"

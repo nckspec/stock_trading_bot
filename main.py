@@ -1,86 +1,76 @@
 import logging
+import TradingDiscord
 import TastyTrades
+import graypy
 import datetime
 import pytz
-import requests
-import time
+
+LOGGER_HOST = "3.86.80.122"
+LOGGER_PORT = 12201
+
+TASTY_TRADES_USERNAME = "nckspec"
+TASTY_TRADES_PASSWORD = "1Success2015!"
+TASTY_TRADES_ACCOUNT_ID = "5WX92378"
+TASTY_TRADES_DEBUG = False
 
 LOGGER = logging.getLogger('logger')
 LOGGER.setLevel(logging.DEBUG)
 
+handler = graypy.GELFTCPHandler(LOGGER_HOST, LOGGER_PORT)
+LOGGER.addHandler(handler)
 
-FORMAT = '%(asctime)s - %(levelname)s - %(message)s\n%(extra)s\n'
+
+FORMAT = '%(asctime)s - %(levelname)s - %(message)s\n'
 logging.basicConfig(format=FORMAT, datefmt='%m/%d/%Y %H:%M:%S')
-logging.disable(logging.DEBUG)
+# logging.disable(logging.DEBUG)
 
-# LOGGER.debug('Hello Graylog.')
+def get_current_date():
+    date = pytz.utc.localize(datetime.datetime.utcnow())
+    date = date.astimezone(pytz.timezone("America/Los_Angeles"))
+    return date
 
-tasty = TastyTrades.TastyTrades(username="nckspec", password="1Success2015!", account_id="5WX92378", debug=False)
+#  Will round the price down to the nearest 10 to get the sell strike price and then
+#  set the buy strike price $10 below
+def get_strike_prices(price: float):
+    sell_strike_price = round(price / 10) * 10
+    buy_strike_price = sell_strike_price - 10
 
-print(tasty.get_balance())
+    return {
+        "buy_strike_price": buy_strike_price,
+        "sell_strike_price": sell_strike_price
+    }
 
-#  Get the current date in Los Angeles time
-# date = pytz.utc.localize(datetime.datetime.utcnow())
-# date = date.astimezone(pytz.timezone("America/Los_Angeles"))
+def main():
+    try:
+        discord = TradingDiscord.TradingDiscord()
+        LOGGER.info("Initialized connection to Discord.")
 
-date = datetime.date(2023, 7, 17)
+        exchange = TastyTrades.TastyTrades(username=TASTY_TRADES_USERNAME, password=TASTY_TRADES_PASSWORD, account_id=TASTY_TRADES_ACCOUNT_ID, debug=TASTY_TRADES_DEBUG)
+        LOGGER.info("Initialized connection to exchange: Tasty Trades")
 
+        @discord.event
+        def on_price_notification(price):
+            LOGGER.info(f"Received price notification of {price}")
 
-try:
-    order = tasty.create_order(
-        type="put",
-        symbol="NDXP",
-        expiration_date=date,
-        limit=5.0,
-        price_effect="credit",
-        quantity=1,
-        buy_strike_price=15700,
-        sell_strike_price=15710
-    )
-except Exception as ex:
-    print(ex)
+            strike_prices = get_strike_prices(price)
+            LOGGER.info(f"Setting a vertical put spread of {strike_prices['buy_strike_price']}/{strike_prices['sell_strike_price']}")
 
-def get_trades():
-    endpoint = f"/accounts/{tasty.get_account_id()}/orders/live"
-    response = tasty._make_request(endpoint, "get")
-    print(response.json())
+            order = exchange.create_order(
+                type="put",
+                symbol="NDXP",
+                expiration_date=datetime.date(2023, 7, 17),
+                limit=5.0,
+                price_effect="credit",
+                quantity=1,
+                buy_strike_price=strike_prices['buy_strike_price'],
+                sell_strike_price=strike_prices['sell_strike_price']
+            )
 
-def cancel_trade(id):
-    endpoint = f"/accounts/{tasty.get_account_id()}/orders/{id}"
+            order.send()
+            LOGGER.info("Order sent.", extra={})
 
-    response = tasty._make_request(endpoint, "delete")
-
-    print(response.json())
-
-get_trades()
-
-try:
-    response = order.send()
-    print(response.json())
-except Exception as ex:
-    print(ex)
-
-# response = order.cancel()
-# print(response.json())
-
-# print(order)
-# print()
+    except Exception as ex:
+        LOGGER.error(f"Error in main(): {ex}")
 
 
-
-
-# try:
-#     response = tasty._make_request("/instruments/equity-options/NDXP  230714P15700000", "get")
-#     print(response.json())
-# except Exception as ex:
-#     print(ex)
-
-# response = tasty._make_request("/option-chains/NDX/compact", "get")
-#
-# for item in response.json()['data']['items']:
-#     print(item)
-#     time.sleep(3)
-
-
-
-
+main()
