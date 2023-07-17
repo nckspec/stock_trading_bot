@@ -2,12 +2,13 @@ import discord
 import re
 import threading
 import logging
+import os
 
 LOGGER = logging.getLogger('logger')
 
-TRADE_NOTIFICATIONS_CHANNEL = "general"
-TRADE_NOTIFICATIONS_BOT = "bignick123#2012"
-DISCORD_TOKEN = "MTEzMDIwOTEwNzMyMDc3ODc4Mw.GgfPsY.OklXdmPiFdURMxa_0BjSj1a80d226DLRpKIQlo"
+DISCORD_NOTIFICATIONS_CHANNEL = str(os.environ['DISCORD_NOTIFICATIONS_CHANNEL'])
+DISCORD_NOTIFICATIONS_BOT = str(os.environ['DISCORD_NOTIFICATIONS_BOT'])
+DISCORD_TOKEN = str(os.environ['DISCORD_TOKEN'])
 
 class TradingDiscord:
     def __init__(self):
@@ -90,7 +91,7 @@ class TradingDiscord:
             author = str(message.author)
             content = str(message.content)
             #  Check if the message came from the notifications channel
-            if channel == TRADE_NOTIFICATIONS_CHANNEL and author == TRADE_NOTIFICATIONS_BOT:
+            if channel == DISCORD_NOTIFICATIONS_CHANNEL and author == DISCORD_NOTIFICATIONS_BOT:
                 #  Check if the bot is giving a valid trade notification
                 if "NDX" in content:
                     return True

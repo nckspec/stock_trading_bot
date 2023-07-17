@@ -4,14 +4,15 @@ import TastyTrades
 import graypy
 import datetime
 import pytz
+import os
 
-LOGGER_HOST = "3.86.80.122"
-LOGGER_PORT = 12201
+LOGGER_HOST = str(os.environ['LOGGER_HOST'])
+LOGGER_PORT = int(os.environ['LOGGER_PORT'])
 
-TASTY_TRADES_USERNAME = "nckspec"
-TASTY_TRADES_PASSWORD = "1Success2015!"
-TASTY_TRADES_ACCOUNT_ID = "5WX92378"
-TASTY_TRADES_DEBUG = False
+TASTY_TRADES_USERNAME = str(os.environ['TASTY_TRADES_USERNAME'])
+TASTY_TRADES_PASSWORD = str(os.environ['TASTY_TRADES_PASSWORD'])
+TASTY_TRADES_ACCOUNT_ID = str(os.environ['TASTY_TRADES_ACCOUNT_ID'])
+TASTY_TRADES_DEBUG = bool(int(os.environ['TASTY_TRADES_DEBUG']))
 
 LOGGER = logging.getLogger('logger')
 LOGGER.setLevel(logging.DEBUG)
