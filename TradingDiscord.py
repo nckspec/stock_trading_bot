@@ -8,6 +8,7 @@ LOGGER = logging.getLogger('logger')
 
 DISCORD_NOTIFICATIONS_CHANNEL = str(os.environ['DISCORD_NOTIFICATIONS_CHANNEL'])
 DISCORD_NOTIFICATIONS_BOT = str(os.environ['DISCORD_NOTIFICATIONS_BOT'])
+DISCORD_NOTIFICATIONS_DISABLE_VERIFY_BOT = bool(int(os.environ['DISCORD_NOTIFICATIONS_DISABLE_VERIFY_BOT']))
 DISCORD_TOKEN = str(os.environ['DISCORD_TOKEN'])
 
 class TradingDiscord:
@@ -91,7 +92,7 @@ class TradingDiscord:
             author = str(message.author)
             content = str(message.content)
             #  Check if the message came from the notifications channel
-            if channel == DISCORD_NOTIFICATIONS_CHANNEL and author == DISCORD_NOTIFICATIONS_BOT:
+            if channel == DISCORD_NOTIFICATIONS_CHANNEL and (author == DISCORD_NOTIFICATIONS_BOT or DISCORD_NOTIFICATIONS_DISABLE_VERIFY_BOT is True):
                 #  Check if the bot is giving a valid trade notification
                 if "NDX" in content:
                     return True
