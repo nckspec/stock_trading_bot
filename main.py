@@ -43,7 +43,7 @@ def get_strike_prices(price: float):
         "sell_strike_price": sell_strike_price
     }
 
-@app.route("/")
+@app.route('/')
 def main():
     try:
         discord = TradingDiscord.TradingDiscord()
