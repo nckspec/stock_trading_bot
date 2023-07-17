@@ -62,7 +62,7 @@ class TradingDiscord:
             #  and from the right author (bot). Then call the callback function
             #  that we set
             if self._verify_message(message):
-                self._callback_func(self._get_price_from_message(message))
+                await self._callback_func(self._get_price_from_message(message))
         except Exception as ex:
             message = f"Error in TradingDiscord.on_message(): {ex}"
             raise Exception(message)

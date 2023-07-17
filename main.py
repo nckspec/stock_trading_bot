@@ -51,7 +51,7 @@ def main():
         LOGGER.info("Initialized connection to exchange: Tasty Trades")
 
         @discord.event
-        def on_price_notification(price):
+        async def on_price_notification(price):
             LOGGER.info(f"Received price notification of {price}")
 
             strike_prices = get_strike_prices(price)
