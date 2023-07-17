@@ -34,7 +34,7 @@ def get_current_date():
 #  Will round the price down to the nearest 10 to get the sell strike price and then
 #  set the buy strike price $10 below
 def get_strike_prices(price: float):
-    sell_strike_price = math.floor((price / 10)) * 10
+    sell_strike_price = math.ceil(price / 10) * 10
     buy_strike_price = sell_strike_price - 10
 
     return {
