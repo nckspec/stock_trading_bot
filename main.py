@@ -46,6 +46,7 @@ def get_strike_prices(price: float):
 @app.route('/')
 def main():
     try:
+        print("test")
         discord = TradingDiscord.TradingDiscord()
         LOGGER.info("Initialized connection to Discord.")
 
