@@ -76,3 +76,5 @@ def main():
     except Exception as ex:
         LOGGER.error(f"Error in main(): {ex}")
 
+if __name__ == '__main__':
+    app.run()
