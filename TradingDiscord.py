@@ -86,7 +86,9 @@ class TradingDiscord:
 
     def _verify_message(self, message):
         try:
-            self._logger.debug("Entering TradingDiscord._verify_message()", extra={"discord_message": message})
+            self._logger.debug("Entering TradingDiscord._verify_message()", extra={"discord_author": str(message.author),
+                                                                                   "discord_channel": str(message.channel),
+                                                                                   "discord_message": str(message.content)})
 
             channel = str(message.channel)
             author = str(message.author)
