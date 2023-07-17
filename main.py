@@ -15,7 +15,7 @@ logging.disable(logging.DEBUG)
 
 # LOGGER.debug('Hello Graylog.')
 
-tasty = TastyTrades.TastyTrades(username="nckspec", password="1Success2015!", account_id="5WX92378", debug=True)
+tasty = TastyTrades.TastyTrades(username="nckspec", password="1Success2015!", account_id="5WX92378", debug=False)
 
 print(tasty.get_balance())
 
@@ -26,17 +26,19 @@ print(tasty.get_balance())
 date = datetime.date(2023, 7, 17)
 
 
-
-order = tasty.create_order(
-    type="put",
-    symbol="NDXP",
-    expiration_date=date,
-    limit=5.0,
-    price_effect="credit",
-    quantity=1,
-    buy_strike_price=15700,
-    sell_strike_price=15710
-)
+try:
+    order = tasty.create_order(
+        type="put",
+        symbol="NDXP",
+        expiration_date=date,
+        limit=5.0,
+        price_effect="credit",
+        quantity=1,
+        buy_strike_price=15700,
+        sell_strike_price=15710
+    )
+except Exception as ex:
+    print(ex)
 
 def get_trades():
     endpoint = f"/accounts/{tasty.get_account_id()}/orders/live"
@@ -52,12 +54,14 @@ def cancel_trade(id):
 
 get_trades()
 
+try:
+    response = order.send()
+    print(response.json())
+except Exception as ex:
+    print(ex)
 
-response = order.send()
-print(response.json())
-
-response = order.cancel()
-print(response.json())
+# response = order.cancel()
+# print(response.json())
 
 # print(order)
 # print()

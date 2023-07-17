@@ -13,16 +13,17 @@ class TastyTrades:
     def __init__(self, username, password, account_id, debug=False):
         try:
             self._logger = logging.LoggerAdapter(LOGGER,
-                                   {"extra":
-                                    {'username': username,
+                                   {'class': "TastyTrades()",
+                                    'username': username,
                                     'password': password,
                                     'account_id': account_id,
-                                    'debug': str(debug)}})
+                                    'debug': str(debug)})
 
             if debug:
-                self._api_url = API_URL
-            else:
                 self._api_url = SANDBOX_API_URL
+
+            else:
+                self._api_url = API_URL
 
             self._account_id = account_id
 
