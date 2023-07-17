@@ -44,7 +44,6 @@ def get_strike_prices(price: float):
 
 def main():
     try:
-        print("test")
         discord = TradingDiscord.TradingDiscord()
         LOGGER.info("Initialized connection to Discord.")
 
@@ -61,7 +60,7 @@ def main():
             order = exchange.create_order(
                 type="put",
                 symbol="NDXP",
-                expiration_date=datetime.date(2023, 7, 17),
+                expiration_date=get_current_date(),
                 limit=5.0,
                 price_effect="credit",
                 quantity=1,
