@@ -8,6 +8,7 @@ TASTY_TRADES_PASSWORD = {password of Tasty Trades account}
 TASTY_TRADES_ACCOUNT_ID = {account id of Tasty Trades account}
 TASTY_TRADES_DEBUG = {True/False - If True Tasty Trades will use sandbox mode}
 
-TRADE_NOTIFICATIONS_CHANNEL = {Discord channel we are getting notifications on}
-TRADE_NOTIFICATIONS_BOT = {The Discord username (and number) of the bot sending notification}
+DISCORD_NOTIFICATIONS_CHANNEL = {Discord channel we are getting notifications on}
+DISCORD_NOTIFICATIONS_BOT = {The Discord username (and number) of the bot sending notification}
+DISCORD_NOTIFICATIONS_DISABLE_VERIFY_BOT = {true/false if we want to disable verification of bot name}
 DISCORD_TOKEN = {Discord bot token}
