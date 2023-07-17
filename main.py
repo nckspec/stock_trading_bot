@@ -5,6 +5,8 @@ import graypy
 import datetime
 import pytz
 import os
+import flask
+app = flask.Flask(__name__)
 
 LOGGER_HOST = str(os.environ['LOGGER_HOST'])
 LOGGER_PORT = int(os.environ['LOGGER_PORT'])
@@ -41,6 +43,7 @@ def get_strike_prices(price: float):
         "sell_strike_price": sell_strike_price
     }
 
+@app.route("/")
 def main():
     try:
         discord = TradingDiscord.TradingDiscord()
@@ -73,5 +76,3 @@ def main():
     except Exception as ex:
         LOGGER.error(f"Error in main(): {ex}")
 
-
-main()
