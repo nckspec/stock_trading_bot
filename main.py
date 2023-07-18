@@ -18,7 +18,7 @@ TASTY_TRADES_DEBUG = bool(int(os.environ['TASTY_TRADES_DEBUG']))
 
 API_PORT = 5555
 
-LOGGER = logging.getLogger('main-logger')
+LOGGER = logging.getLogger('logger')
 LOGGER.setLevel(logging.DEBUG)
 
 handler = graypy.GELFTCPHandler(LOGGER_HOST, LOGGER_PORT)
