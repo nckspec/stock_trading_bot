@@ -67,7 +67,7 @@ async def on_price_notification(request: Request, price: float):
         order = exchange.create_order(
             type="put",
             symbol="NDXP",
-            expiration_date=datetime.date(23,7,18),
+            expiration_date=get_current_date(),
             limit=5.0,
             price_effect="credit",
             quantity=1,
