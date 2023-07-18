@@ -1,5 +1,6 @@
 import logging
-import TradingDiscord
+from fastapi import FastAPI, Request
+import uvicorn
 import TastyTrades
 import graypy
 import datetime
@@ -15,7 +16,9 @@ TASTY_TRADES_PASSWORD = str(os.environ['TASTY_TRADES_PASSWORD'])
 TASTY_TRADES_ACCOUNT_ID = str(os.environ['TASTY_TRADES_ACCOUNT_ID'])
 TASTY_TRADES_DEBUG = bool(int(os.environ['TASTY_TRADES_DEBUG']))
 
-LOGGER = logging.getLogger('logger')
+API_PORT = 5555
+
+LOGGER = logging.getLogger('main-logger')
 LOGGER.setLevel(logging.DEBUG)
 
 handler = graypy.GELFTCPHandler(LOGGER_HOST, LOGGER_PORT)
@@ -25,6 +28,8 @@ LOGGER.addHandler(handler)
 FORMAT = '%(asctime)s - %(levelname)s - %(message)s\n'
 logging.basicConfig(format=FORMAT, datefmt='%m/%d/%Y %H:%M:%S')
 # logging.disable(logging.DEBUG)
+
+app = FastAPI()
 
 def get_current_date():
     date = pytz.utc.localize(datetime.datetime.utcnow())
@@ -42,36 +47,35 @@ def get_strike_prices(price: float):
         "sell_strike_price": sell_strike_price
     }
 
-def main():
+@app.post("/notify")
+async def on_price_notification(request: Request, price: float):
     try:
-        discord = TradingDiscord.TradingDiscord()
-        LOGGER.info("Initialized connection to Discord.")
+        LOGGER.info(f"Received price notification of {price}")
 
-        exchange = TastyTrades.TastyTrades(username=TASTY_TRADES_USERNAME, password=TASTY_TRADES_PASSWORD, account_id=TASTY_TRADES_ACCOUNT_ID, debug=TASTY_TRADES_DEBUG)
+        exchange = TastyTrades.TastyTrades(username=TASTY_TRADES_USERNAME, password=TASTY_TRADES_PASSWORD,
+                                           account_id=TASTY_TRADES_ACCOUNT_ID, debug=TASTY_TRADES_DEBUG)
         LOGGER.info("Initialized connection to exchange: Tasty Trades")
 
-        @discord.event
-        async def on_price_notification(price):
-            LOGGER.info(f"Received price notification of {price}")
+        strike_prices = get_strike_prices(price)
+        LOGGER.info(
+            f"Setting a vertical put spread of {strike_prices['buy_strike_price']}/{strike_prices['sell_strike_price']}")
 
-            strike_prices = get_strike_prices(price)
-            LOGGER.info(f"Setting a vertical put spread of {strike_prices['buy_strike_price']}/{strike_prices['sell_strike_price']}")
+        order = exchange.create_order(
+            type="put",
+            symbol="NDXP",
+            expiration_date=datetime.date(23,7,18),
+            limit=5.0,
+            price_effect="credit",
+            quantity=1,
+            buy_strike_price=strike_prices['buy_strike_price'],
+            sell_strike_price=strike_prices['sell_strike_price']
+        )
 
-            order = exchange.create_order(
-                type="put",
-                symbol="NDXP",
-                expiration_date=get_current_date(),
-                limit=5.0,
-                price_effect="credit",
-                quantity=1,
-                buy_strike_price=strike_prices['buy_strike_price'],
-                sell_strike_price=strike_prices['sell_strike_price']
-            )
-
-            order.send()
-            LOGGER.info("Order sent.", extra={})
-
+        order.send()
+        LOGGER.info("Order sent.", extra={})
     except Exception as ex:
-        LOGGER.error(f"Error in main(): {ex}")
+        message = f"Error in on_price_notification(): {ex}"
+        raise Exception(message)
 
-main()
+if __name__ == '__main__':
+    uvicorn.run(app, host='0.0.0.0', port=API_PORT)
