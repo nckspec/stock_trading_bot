@@ -50,7 +50,11 @@ def get_strike_prices(price: float):
 @app.post("/notify")
 async def on_price_notification(request: Request, price: float):
     try:
+        LOGGER.debug(f"Entering on_price_notification()\n"
+                     f"price: {price}")
         LOGGER.info(f"Received price notification of {price}")
+
+        price = float(price)
 
         exchange = TastyTrades.TastyTrades(username=TASTY_TRADES_USERNAME, password=TASTY_TRADES_PASSWORD,
                                            account_id=TASTY_TRADES_ACCOUNT_ID, debug=TASTY_TRADES_DEBUG)
