@@ -79,7 +79,7 @@ async def on_price_notification(request: Request, price: float):
         LOGGER.info("Order sent.", extra={})
     except Exception as ex:
         message = f"Error in on_price_notification(): {ex}"
-        raise Exception(message)
+        LOGGER.error(message)
 
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=API_PORT)
